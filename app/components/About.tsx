@@ -99,28 +99,44 @@ const LocationInfo = () => {
   useEffect(() => {
     // Update time every second
     const updateTime = () => {
-      const londonTime = new Date().toLocaleString('en-GB', {
-        timeZone: 'Europe/London',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      })
-      setTime(londonTime)
+      try {
+        const londonTime = new Date().toLocaleString('en-GB', {
+          timeZone: 'Europe/London',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })
+        setTime(londonTime)
+      } catch (error) {
+        console.error('Failed to update time:', error)
+      }
     }
 
     updateTime()
     const timeInterval = setInterval(updateTime, 1000)
 
-    // Fetch temperature
+    // Fetch temperature with timeout
     const fetchTemperature = async () => {
       try {
-        const response = await fetch('https://wttr.in/London?format=%t')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+        
+        const response = await fetch('https://wttr.in/London?format=%t', {
+          signal: controller.signal,
+        })
+        
+        clearTimeout(timeoutId)
+        
         if (response.ok) {
           const temp = await response.text()
           setTemperature(temp.trim())
+        } else {
+          setTemperature('N/A')
         }
       } catch (error) {
-        console.error('Failed to fetch temperature:', error)
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Failed to fetch temperature:', error)
+        }
         setTemperature('N/A')
       } finally {
         setLoading(false)
@@ -129,7 +145,9 @@ const LocationInfo = () => {
 
     fetchTemperature()
 
-    return () => clearInterval(timeInterval)
+    return () => {
+      clearInterval(timeInterval)
+    }
   }, [])
 
   return (
@@ -181,8 +199,23 @@ const SoftwareIcons = () => {
 
   const hoveredSoftware = getHoveredSoftware()
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY })
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0]?.clientX || 0 : e.clientX
+    const clientY = 'touches' in e ? e.touches[0]?.clientY || 0 : e.clientY
+    setMousePosition({ x: clientX, y: clientY })
+  }
+
+  const handleTouchStart = (index: number, isDuplicate: boolean = false) => {
+    if (isDuplicate) {
+      setHoveredDuplicateIndex(index)
+    } else {
+      setHoveredIndex(index)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setHoveredIndex(null)
+    setHoveredDuplicateIndex(null)
   }
 
   return (
@@ -190,14 +223,17 @@ const SoftwareIcons = () => {
       <div 
         className="relative overflow-hidden"
         onMouseMove={handleMouseMove}
+        onTouchMove={handleMouseMove}
       >
-        <div className="flex animate-scroll">
+        <div className="flex animate-scroll will-change-transform">
           {softwareIcons.map((software, index) => (
             <div
               key={index}
               className="flex-shrink-0 mx-4 w-16 h-16 relative group cursor-pointer"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onTouchStart={() => handleTouchStart(index, false)}
+              onTouchEnd={handleTouchEnd}
             >
               <Image
                 src={software.path}
@@ -205,6 +241,7 @@ const SoftwareIcons = () => {
                 fill
                 className="object-contain"
                 sizes="64px"
+                loading="lazy"
               />
             </div>
           ))}
@@ -215,6 +252,8 @@ const SoftwareIcons = () => {
               className="flex-shrink-0 mx-4 w-16 h-16 relative group cursor-pointer"
               onMouseEnter={() => setHoveredDuplicateIndex(index)}
               onMouseLeave={() => setHoveredDuplicateIndex(null)}
+              onTouchStart={() => handleTouchStart(index, true)}
+              onTouchEnd={handleTouchEnd}
             >
               <Image
                 src={software.path}
@@ -222,6 +261,7 @@ const SoftwareIcons = () => {
                 fill
                 className="object-contain"
                 sizes="64px"
+                loading="lazy"
               />
             </div>
           ))}
