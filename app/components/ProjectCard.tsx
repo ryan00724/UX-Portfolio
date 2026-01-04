@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { FiGithub, FiExternalLink, FiSmartphone } from 'react-icons/fi'
-import { FaAppStore, FaGooglePlay } from 'react-icons/fa'
+import { FiExternalLink } from 'react-icons/fi'
+import { FaAppStore } from 'react-icons/fa'
 import { Project } from '@/data/projects'
 
 interface ProjectCardProps {
@@ -21,15 +21,16 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-200"
+      className="relative rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-200 aspect-[4/5] group"
     >
-      <div className="relative h-48 sm:h-56 w-full bg-gray-200 overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full bg-gray-200">
         {!imageError ? (
           <Image
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             onError={() => setImageError(true)}
           />
@@ -38,77 +39,48 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
           </div>
         )}
-        {project.category === 'mobile' && (
-          <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
-            <FiSmartphone />
-            Mobile
-          </div>
-        )}
       </div>
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-black mb-2">
-          {project.title}
-        </h3>
-        <p className="text-black mb-4 line-clamp-2">
-          {project.description}
-        </p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.technologies.map((tech) => (
-            <span
-              key={tech}
-              className="px-2 py-1 bg-gray-100 text-black text-xs rounded"
-            >
-              {tech}
-            </span>
-          ))}
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+      {/* Content Overlay */}
+      <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
+        {/* Top Section - Title and Description */}
+        <div className="flex-1 flex flex-col justify-end">
+          <h3 className="text-2xl font-bold text-white mb-2">
+            {project.title}
+          </h3>
+          <p className="text-white/90 text-sm mb-4 line-clamp-2">
+            {project.description}
+          </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          {project.links.github && (
-            <a
-              href={project.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-black hover:text-blue-600 transition-colors text-sm font-medium"
-              aria-label={`View ${project.title} on GitHub`}
-            >
-              <FiGithub className="text-lg" />
-              <span className="hidden sm:inline">Code</span>
-            </a>
-          )}
+
+        {/* Bottom Section - Call to Action Buttons */}
+        <div className="flex flex-wrap gap-3 mt-4">
+          {/* Case Study Button */}
+          <a
+            href={project.links.demo || '#'}
+            target={project.links.demo ? '_blank' : '_self'}
+            rel={project.links.demo ? 'noopener noreferrer' : undefined}
+            className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm"
+            aria-label={`View ${project.title} case study`}
+          >
+            <FiExternalLink className="text-base" />
+            Case Study
+          </a>
+          
+          {/* App Store Button */}
           {project.links.appStore && (
             <a
               href={project.links.appStore}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-black hover:text-blue-600 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm"
               aria-label={`View ${project.title} on App Store`}
             >
-              <FaAppStore className="text-lg" />
-              <span className="hidden sm:inline">App Store</span>
-            </a>
-          )}
-          {project.links.playStore && (
-            <a
-              href={project.links.playStore}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-black hover:text-blue-600 transition-colors text-sm font-medium"
-              aria-label={`View ${project.title} on Play Store`}
-            >
-              <FaGooglePlay className="text-lg" />
-              <span className="hidden sm:inline">Play Store</span>
-            </a>
-          )}
-          {project.links.demo && (
-            <a
-              href={project.links.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-black hover:text-blue-600 transition-colors text-sm font-medium"
-              aria-label={`View ${project.title} demo`}
-            >
-              <FiExternalLink className="text-lg" />
-              <span className="hidden sm:inline">Demo</span>
+              <FaAppStore className="text-base" />
+              App Store
             </a>
           )}
         </div>

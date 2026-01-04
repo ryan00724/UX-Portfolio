@@ -91,6 +91,163 @@ const achievements = [
   },
 ]
 
+const LocationInfo = () => {
+  const [time, setTime] = useState<string>('')
+  const [temperature, setTemperature] = useState<string>('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Update time every second
+    const updateTime = () => {
+      const londonTime = new Date().toLocaleString('en-GB', {
+        timeZone: 'Europe/London',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+      setTime(londonTime)
+    }
+
+    updateTime()
+    const timeInterval = setInterval(updateTime, 1000)
+
+    // Fetch temperature
+    const fetchTemperature = async () => {
+      try {
+        const response = await fetch('https://wttr.in/London?format=%t')
+        if (response.ok) {
+          const temp = await response.text()
+          setTemperature(temp.trim())
+        }
+      } catch (error) {
+        console.error('Failed to fetch temperature:', error)
+        setTemperature('N/A')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTemperature()
+
+    return () => clearInterval(timeInterval)
+  }, [])
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
+      <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
+        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        Currently located in London, UK
+      </p>
+      <div className="flex items-center gap-4 text-sm">
+        {time && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-gray-500">🕐</span>
+            <span className="text-gray-700 font-medium">{time}</span>
+          </div>
+        )}
+        {!loading && temperature && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-gray-500">🌡️</span>
+            <span className="text-gray-700 font-medium">{temperature}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const SoftwareIcons = () => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [hoveredDuplicateIndex, setHoveredDuplicateIndex] = useState<number | null>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  const softwareIcons = [
+    { path: '/icons/Figma.svg', name: 'Figma' },
+    { path: '/icons/Photoshop.svg', name: 'Photoshop' },
+    { path: '/icons/illustrator.svg', name: 'Illustrator' },
+    { path: '/icons/indesign.svg', name: 'InDesign' },
+    { path: '/icons/Cursor.webp', name: 'Cursor' },
+    { path: '/icons/Html.png', name: 'HTML' },
+    { path: '/icons/Css.png', name: 'CSS' },
+    { path: '/icons/AutoCad.png', name: 'AutoCAD' },
+    { path: '/icons/Revit.png', name: 'Revit' },
+  ]
+
+  const getHoveredSoftware = () => {
+    if (hoveredIndex !== null) return softwareIcons[hoveredIndex]
+    if (hoveredDuplicateIndex !== null) return softwareIcons[hoveredDuplicateIndex]
+    return null
+  }
+
+  const hoveredSoftware = getHoveredSoftware()
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY })
+  }
+
+  return (
+    <>
+      <div 
+        className="relative overflow-hidden"
+        onMouseMove={handleMouseMove}
+      >
+        <div className="flex animate-scroll">
+          {softwareIcons.map((software, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 mx-4 w-16 h-16 relative group cursor-pointer"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <Image
+                src={software.path}
+                alt={software.name}
+                fill
+                className="object-contain"
+                sizes="64px"
+              />
+            </div>
+          ))}
+          {/* Duplicate for seamless loop */}
+          {softwareIcons.map((software, index) => (
+            <div
+              key={`duplicate-${index}`}
+              className="flex-shrink-0 mx-4 w-16 h-16 relative group cursor-pointer"
+              onMouseEnter={() => setHoveredDuplicateIndex(index)}
+              onMouseLeave={() => setHoveredDuplicateIndex(null)}
+            >
+              <Image
+                src={software.path}
+                alt={software.name}
+                fill
+                className="object-contain"
+                sizes="64px"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      {hoveredSoftware && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="fixed bg-black text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap pointer-events-none z-50"
+          style={{
+            left: mousePosition.x,
+            top: mousePosition.y - 40,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          {hoveredSoftware.name}
+          <div className="absolute w-0 h-0 border-l-4 border-r-4 border-b-4 border-solid border-transparent border-b-black top-full left-1/2 -translate-x-1/2"></div>
+        </motion.div>
+      )}
+    </>
+  )
+}
+
 export default function About() {
   const [currentIndex, setCurrentIndex] = useState(1) // Start with center card
 
@@ -149,17 +306,16 @@ export default function About() {
             <div className="space-y-6">
               {experiences.map((exp, index) => (
                 <div key={index} className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="font-semibold text-black">{exp.title}</h4>
+                  <div>
+                    <h4 className="font-semibold text-black">{exp.title}</h4>
+                    <div className="flex items-center gap-2">
                       <p className="text-sm text-gray-600">{exp.company}</p>
-                      {exp.location && (
-                        <p className="text-xs text-gray-500">{exp.location}</p>
-                      )}
+                      <span className="text-xs text-gray-500">•</span>
+                      <span className="text-xs text-gray-500">{exp.year}</span>
                     </div>
-                    <span className="text-xs text-gray-500 whitespace-nowrap ml-4">
-                      {exp.year}
-                    </span>
+                    {exp.location && (
+                      <p className="text-xs text-gray-500">{exp.location}</p>
+                    )}
                   </div>
                   {exp.bullets && (
                     <ul className="space-y-1.5">
@@ -228,14 +384,14 @@ export default function About() {
                 </div>
                 
                 <div className="space-y-1 mb-2">
-                  <p className="text-xs text-gray-500">DESIGNER • 10+ YEARS • PRODUCT</p>
+                  <p className="text-xs text-gray-500">DESIGNER • 3+ YEARS </p>
                   <h3 className="text-2xl font-bold text-black">Ryan Creary</h3>
-                  <p className="text-sm text-gray-600">Product & UX Designer</p>
+                  <p className="text-sm text-gray-600">Product,UX Designer & Architectural</p>
                 </div>
               </div>
 
               <p className="text-sm text-gray-700 leading-relaxed text-center">
-                With over a decade of design experience, I lead strategy and execution to deliver innovative solutions globally.
+                With a background in architecture and digital design, I work across strategy and execution to build thoughtful, user-focused solutions. I’m currently a Designer at Dexters and a Project Manager at Nebula Padel Club.
               </p>
             </motion.div>
 
@@ -269,7 +425,7 @@ export default function About() {
             </motion.div>
           </div>
 
-          {/* Right Column - Three Stacked Cards */}
+          {/* Right Column - Four Stacked Cards */}
           <div className="flex flex-col gap-3 lg:gap-4 h-full">
             {/* First Card - Location */}
             <motion.div
@@ -279,12 +435,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
             >
-              <div className="flex flex-col items-center justify-center h-full text-center">
-                <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  Currently located in London, UK
-                </p>
-              </div>
+              <LocationInfo />
             </motion.div>
 
             {/* Second Card - Research */}
@@ -322,52 +473,24 @@ Helped build and manage a 400+ member padel community overseeing scheduling, pay
               <h3 className="text-xl font-semibold text-black mb-6">
                 Softwares
               </h3>
-              <div className="overflow-hidden">
-                <div className="flex animate-scroll">
-                  {[
-                    '/icons/Figma-logo.svg',
-                    '/icons/Adobe_Photoshop_CC_icon (1).svg',
-                    '/icons/Adobe_Illustrator_CC_icon.svg',
-                    '/icons/Adobe_Indesign_CC_2026_icon.svg',
-                    '/icons/cursor-ai-code-icon.webp',
-                    '/icons/HTML5_logo_and_wordmark.svg.png',
-                    '/icons/5968242.png',
-                    '/icons/images.png',
-                    '/icons/unnamed.png',
-                  ].map((icon, index) => (
-                    <div key={index} className="flex-shrink-0 mx-4 w-16 h-16 relative">
-                      <Image
-                        src={icon}
-                        alt={`Software ${index + 1}`}
-                        fill
-                        className="object-contain"
-                        sizes="64px"
-                      />
-                    </div>
-                  ))}
-                  {/* Duplicate for seamless loop */}
-                  {[
-                    '/icons/Figma-logo.svg',
-                    '/icons/Adobe_Photoshop_CC_icon (1).svg',
-                    '/icons/Adobe_Illustrator_CC_icon.svg',
-                    '/icons/Adobe_Indesign_CC_2026_icon.svg',
-                    '/icons/cursor-ai-code-icon.webp',
-                    '/icons/HTML5_logo_and_wordmark.svg.png',
-                    '/icons/5968242.png',
-                    '/icons/images.png',
-                    '/icons/unnamed.png',
-                  ].map((icon, index) => (
-                    <div key={`duplicate-${index}`} className="flex-shrink-0 mx-4 w-16 h-16 relative">
-                      <Image
-                        src={icon}
-                        alt={`Software ${index + 1}`}
-                        fill
-                        className="object-contain"
-                        sizes="64px"
-                      />
-                    </div>
-                  ))}
-                </div>
+              <SoftwareIcons />
+            </motion.div>
+
+            {/* Fourth Card - 2026 Goals */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
+            >
+              <h3 className="text-xl font-semibold text-black mb-6">
+                2026 Goals
+              </h3>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Goals and aspirations for the year ahead.
+                </p>
               </div>
             </motion.div>
           </div>

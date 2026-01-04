@@ -17,17 +17,16 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: '1',
-    title: 'Mobile App Example 1',
+    title: 'Tradish - Your Ethnic Food Companion',
     description:
-      'A revolutionary mobile application that solves real-world problems with innovative features and intuitive design.',
+      'Discover, track, and cook traditional recipes from around the world with Tradish. Whether you want to reconnect with your cultural roots, try something new, or improve your cooking skills, Tradish makes discovering authentic ethnic recipes simple and enjoyable.',
     longDescription:
       'This mobile app was built using React Native and features a modern UI/UX design. It includes features like real-time synchronization, offline mode, and push notifications.',
-    image: '/images/project1.jpg',
+    image: '/projects/Tradish/Tradish Mockups.png',
     technologies: ['React Native', 'TypeScript', 'Firebase', 'Redux'],
     category: 'mobile',
     links: {
-      appStore: 'https://apps.apple.com',
-      playStore: 'https://play.google.com',
+      appStore: 'https://apps.apple.com/gb/app/tradish/id6747819690',
       github: 'https://github.com',
     },
   },
