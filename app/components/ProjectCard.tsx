@@ -60,8 +60,8 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
           {/* Case Study Button */}
           <a
             href={project.links.demo || '#'}
-            target={project.links.demo ? '_blank' : '_self'}
-            rel={project.links.demo ? 'noopener noreferrer' : undefined}
+            target={project.links.demo && project.links.demo.startsWith('http') ? '_blank' : '_self'}
+            rel={project.links.demo && project.links.demo.startsWith('http') ? 'noopener noreferrer' : undefined}
             className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 hover:bg-gray-800 active:scale-95"
             aria-label={`View ${project.title} case study`}
           >

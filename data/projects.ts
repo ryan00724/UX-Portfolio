@@ -26,6 +26,7 @@ export const projects: Project[] = [
     technologies: ['React Native', 'TypeScript', 'Firebase', 'Redux'],
     category: 'mobile',
     links: {
+      demo: '/case-study/tradish',
       appStore: 'https://apps.apple.com/gb/app/tradish/id6747819690',
       github: 'https://github.com',
     },
