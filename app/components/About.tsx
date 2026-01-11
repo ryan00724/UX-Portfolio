@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
@@ -309,6 +309,21 @@ export default function About() {
     return cards
   }
 
+  const [showSkipMessage, setShowSkipMessage] = useState(false)
+
+  const handleSkipToProjects = () => {
+    setShowSkipMessage(true)
+    setTimeout(() => {
+      const projectsSection = document.querySelector('#projects')
+      if (projectsSection) {
+        projectsSection.scrollIntoView({ behavior: 'smooth' })
+      }
+      setTimeout(() => {
+        setShowSkipMessage(false)
+      }, 3000)
+    }, 3000)
+  }
+
   return (
     <section
       id="about"
@@ -322,12 +337,30 @@ export default function About() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black mb-4">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black mb-6">
             About Me
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            like everyone i have story as well...
-          </p>
+          <div className="flex flex-col items-center gap-4">
+            <button
+              onClick={handleSkipToProjects}
+              className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+            >
+              Skip to Projects
+            </button>
+            <AnimatePresence>
+              {showSkipMessage && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-lg text-gray-600"
+                >
+                  do you not care about me :(
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
 
         {/* Three Card Layout */}
@@ -336,9 +369,17 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -4, scale: 1.01 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.1, 
+              ease: [0.4, 0, 0.2, 1],
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+            className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform"
           >
             <h3 className="text-xl font-semibold text-black mb-6">
               Experience
@@ -381,9 +422,17 @@ export default function About() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all flex-shrink-0"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.2, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform flex-shrink-0"
             >
               <div className="text-center mb-6">
                 {/* Multi-Card Carousel */}
@@ -439,9 +488,17 @@ export default function About() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all flex-1 flex flex-col"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.3, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform flex-1 flex flex-col"
             >
               <h3 className="text-xl font-semibold text-black mb-6 text-center">
                 Currently Watching
@@ -471,9 +528,17 @@ export default function About() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.3, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform"
             >
               <LocationInfo />
             </motion.div>
@@ -482,9 +547,17 @@ export default function About() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all flex flex-col"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.4, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform flex flex-col"
             >
               <div className="relative w-full flex-[0.6] min-h-[200px] overflow-hidden bg-gray-100">
                 <Image
@@ -506,9 +579,17 @@ Helped build and manage a 400+ member padel community overseeing scheduling, pay
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.5, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform"
             >
               <h3 className="text-xl font-semibold text-black mb-6">
                 Softwares
@@ -520,9 +601,17 @@ Helped build and manage a 400+ member padel community overseeing scheduling, pay
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all"
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.6, 
+                ease: [0.4, 0, 0.2, 1],
+                type: "spring",
+                stiffness: 300,
+                damping: 30
+              }}
+              className="bg-white rounded-2xl p-6 lg:p-8 shadow-xl border-2 border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-out will-change-transform"
             >
               <h3 className="text-xl font-semibold text-black mb-6">
                 2026 Goals

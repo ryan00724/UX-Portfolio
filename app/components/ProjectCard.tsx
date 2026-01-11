@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { FiExternalLink } from 'react-icons/fi'
 import { FaAppStore } from 'react-icons/fa'
 import { Project } from '@/data/projects'
@@ -24,7 +25,10 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
       className="group"
     >
       {/* Image Section */}
-      <div className="relative w-full h-96 bg-gray-200 overflow-hidden rounded-lg mb-4">
+      <Link
+        href={project.links.demo || '#'}
+        className="block relative w-full h-96 bg-gray-200 overflow-hidden rounded-lg mb-4 cursor-pointer"
+      >
         {!imageError ? (
           <div className="absolute inset-0 will-change-transform">
             <Image
@@ -44,7 +48,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Text Section - Underneath image */}
       <div>
